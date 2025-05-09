@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QFileDialog
 
 class ImageServices:
     def __init__(self):
-        self.last_upload_folder = "static/images"
+        self.last_upload_folder = "datasets/Processed/test"
         self.last_save_folder = "/"
 
     def upload_image_file(self):
