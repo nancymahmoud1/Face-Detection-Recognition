@@ -20,12 +20,12 @@ FaceVector/
 │   │   ├── ATnT/
 │   │   └── GeorgiaTech/
 │   └── Processed/
-│       ├── ATnT/
-│       │   ├── train/
-│       │   └── test/
-│       └── GeorgiaTech/
-│           ├── train/
-│           └── test/
+│       ├── train/
+│       │   ├── grayscale/
+│       │   └── RGB/
+│       └── test/
+│           ├── grayscale/
+│           └── RGB/
 │
 ├── models/
 │   ├── pca_embeddings_ATnT.npy
