@@ -50,7 +50,6 @@ class MainWindowController:
 
         # Face detection and recognition connections
         self.ui.detect_faces_btn.clicked.connect(self.detect_faces)
-        self.ui.train_model_btn.clicked.connect(self.train_pca_model)
         self.ui.recognize_faces_btn.clicked.connect(self.recognize_faces)
         self.ui.eigen_components_slider.valueChanged.connect(self.update_eigen_components)
         self.ui.dataset_combo.currentIndexChanged.connect(self.on_dataset_changed)

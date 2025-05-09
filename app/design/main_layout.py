@@ -353,10 +353,7 @@ class Ui_MainWindow(object):
         recognition_group.setStyleSheet(self.groupbox_style)
         recognition_layout = QtWidgets.QVBoxLayout()
         
-        self.train_model_btn = QtWidgets.QPushButton("Train PCA Model")
-        self.train_model_btn.setStyleSheet(self.button_style)
-        recognition_layout.addWidget(self.train_model_btn)
-        
+
         self.recognize_faces_btn = QtWidgets.QPushButton("Recognize Faces")
         self.recognize_faces_btn.setStyleSheet(self.button_style)
         recognition_layout.addWidget(self.recognize_faces_btn)
