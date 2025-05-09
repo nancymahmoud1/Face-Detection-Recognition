@@ -18,8 +18,6 @@ class MainWindowController:
         self.MainWindow = QtWidgets.QMainWindow()
 
         self.path = None
-        self.path_1 = None
-        self.path_2 = None
 
         self.original_image = None
         self.processed_image = None
