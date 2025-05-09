@@ -1,40 +1,49 @@
-SiftSee/
-│
-├── README.md
-├── requirements.txt
-├── main.py
-│
+FaceVector/
 ├── app/
 │   ├── controller.py
-│   │
 │   ├── design/
+│   │   ├── main_layout.py
 │   │   ├── tools/
 │   │   │   └── gui_utilities.py
-│   │   │
-│   │   ├── ui/
-│   │   │   └── main_layout.ui
-│   │   │
-│   │   └── main_layout.py
-│   │
-│   ├── processing/
-│   │
+│   │   └── ui/
+│   │       └── main_layout.ui
+│   ├── preprocessing/
+│   │   └── data_preprocessor.py
 │   ├── services/
 │   │   └── image_service.py
-│   │
-│   ├── tests/
-│   │   └── design_test.py
-│   │
 │   └── utils/
-│       └── clean_cache.py
+│       ├── clean_cache.py
+│       └── logging_manager.py
 │
-└── static/
-    ├── icons/
-    │   └── icon.png
-    │
-    ├── images/
-    │   ├── image01
-    │   ├── ......
-    │   └── image11
-    │
-    └── docs/
-        └── OOP Structure.txt
+├── datasets/
+│   ├── Original/
+│   │   ├── ATnT/
+│   │   └── GeorgiaTech/
+│   └── Processed/
+│       ├── ATnT/
+│       │   ├── train/
+│       │   └── test/
+│       └── GeorgiaTech/
+│           ├── train/
+│           └── test/
+│
+├── models/
+│   ├── pca_embeddings_ATnT.npy
+│   ├── pca_labels_ATnT.json
+│   ├── pca_model_ATnT.pkl
+│   ├── pca_embeddings_GT.npy
+│   ├── pca_labels_GT.json
+│   └── pca_model_GT.pkl
+│
+├── static/
+│   ├── docs/
+│   │   └── OOP Structure.txt
+│   ├── icons/
+│   │   └── icon.png
+│   └── images/
+│
+├── .gitignore
+│
+├── main.py
+│
+└── README.md

@@ -194,7 +194,7 @@ class Ui_MainWindow(object):
         """Creates the title icon & label in a horizontal layout."""
         self.title_icon = QtWidgets.QLabel()
         self.title_icon.setMaximumSize(QtCore.QSize(80, 80))
-        self.title_icon.setPixmap(QtGui.QPixmap("static/icons/icon2.png"))
+        self.title_icon.setPixmap(QtGui.QPixmap("static/icons/icon.png"))
         self.title_icon.setScaledContents(True)
         self.title_icon.setObjectName("title_icon")
 
