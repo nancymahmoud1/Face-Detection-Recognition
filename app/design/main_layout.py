@@ -86,7 +86,6 @@ class Ui_MainWindow(object):
                 padding-top: 16px;
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
                     stop:0 rgba(0,234,255,0.25), stop:0.5 rgba(160,132,238,0.18), stop:1 rgba(0,180,216,0.18));
-                box-shadow: 0 0 32px #a084ee33, 0 0 80px 10px #a084ee22 inset;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
@@ -96,7 +95,6 @@ class Ui_MainWindow(object):
                 font-size: 17px;
                 font-weight: bold;
                 letter-spacing: 1px;
-                text-shadow: 0 0 8px #a084ee88;
             }
         """
 
@@ -113,15 +111,12 @@ class Ui_MainWindow(object):
                 padding: 12px 28px;
                 margin: 4px 2px;
                 letter-spacing: 1px;
-                box-shadow: 0 0 16px #a084ee44, 0 2px 8px #00eaff33;
-                transition: all 0.2s;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
                     stop:0 #a084ee, stop:1 #00eaff);
                 color: #fff;
                 border: 2px solid #00eaff;
-                box-shadow: 0 0 24px #00eaff99, 0 0 40px #a084ee55;
             }
             QPushButton:pressed {
                 background: #0a2342;
@@ -143,12 +138,10 @@ class Ui_MainWindow(object):
                 min-height: 40px;
                 max-width: 40px;
                 max-height: 40px;
-                box-shadow: 0 0 16px #ffb6ea88;
             }
             QPushButton:hover {
                 background: #ff5252;
                 color: #fff;
-                box-shadow: 0 0 24px #ffb6ea;
             }
             QPushButton:pressed {
                 background: #b71c1c;
@@ -170,9 +163,7 @@ class Ui_MainWindow(object):
                 background: qradialgradient(cx:0.5, cy:0.5, radius:0.7, fx:0.5, fy:0.5, stop:0 #fff, stop:1 #a084ee);
                 width: 28px;
                 margin: -10px 0;
-                border-radius: 14px;
                 border: 2px solid #00eaff;
-                box-shadow: 0 0 16px #a084ee99, 0 0 8px #00eaff55;
             }
             QSlider::sub-page:horizontal {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
@@ -191,7 +182,6 @@ class Ui_MainWindow(object):
                 padding: 8px;
                 font-weight: bold;
                 letter-spacing: 1px;
-                text-shadow: 0 0 8px #a084ee88;
             }
         """
 
