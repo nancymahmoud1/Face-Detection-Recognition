@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets, QtCore
 # Core utility and services
 from app.utils.clean_cache import remove_directories
 from app.services.image_service import ImageServices
+from app.services.face_service import FaceDetectionService
 
 # Main GUI design
 from app.design.main_layout import Ui_MainWindow
@@ -18,22 +19,45 @@ class MainWindowController:
         self.MainWindow = QtWidgets.QMainWindow()
 
         self.path = None
-
         self.original_image = None
         self.processed_image = None
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.MainWindow)
 
+        # Initialize services
         self.srv = ImageServices()
+        self.face_service = FaceDetectionService()
 
         # Connect signals to slots
         self.setup_connections()
 
-    def run(self):
-        """Run the application."""
-        self.MainWindow.showFullScreen()
-        self.app.exec_()
+        # Setup face detection controls
+        self.setup_face_detection_controls()
+
+    def show_error(self, message: str):
+        """Show error message dialog"""
+        QtWidgets.QMessageBox.critical(self.MainWindow, "Error", message)
+
+    def show_info(self, message: str):
+        """Show information message dialog"""
+        QtWidgets.QMessageBox.information(self.MainWindow, "Information", message)
+
+    def setup_face_detection_controls(self):
+        """Setup face detection controls and their connections"""
+
+        # Connect slider value changes to update labels
+        self.ui.scale_factor_slider.valueChanged.connect(self.update_scale_factor_label)
+        self.ui.min_neighbors_slider.valueChanged.connect(self.update_min_neighbors_label)
+        self.ui.min_size_slider.valueChanged.connect(self.update_min_size_label)
+
+        # Connect detect faces button
+        self.ui.detect_faces_btn.clicked.connect(self.detect_faces)
+
+        # Set initial values
+        self.update_scale_factor_label(self.ui.scale_factor_slider.value())
+        self.update_min_neighbors_label(self.ui.min_neighbors_slider.value())
+        self.update_min_size_label(self.ui.min_size_slider.value())
 
     def setup_connections(self):
         """Setup all button and control connections"""
@@ -45,11 +69,60 @@ class MainWindowController:
         self.ui.quit_app_button.clicked.connect(self.quit_application)
 
         # Face detection and recognition connections
-        self.ui.detect_faces_btn.clicked.connect(self.detect_faces)
         self.ui.recognize_faces_btn.clicked.connect(self.recognize_faces)
         self.ui.eigen_components_slider.valueChanged.connect(self.update_eigen_components)
         self.ui.dataset_combo.currentIndexChanged.connect(self.on_dataset_changed)
         self.ui.color_mode_combo.currentIndexChanged.connect(self.on_color_mode_changed)
+
+        # Setup face detection controls
+        self.setup_face_detection_controls()
+
+    def update_scale_factor_label(self, value):
+        """Update the scale factor label with the current slider value"""
+        scale_factor = value / 10.0  # Convert slider value (11-20) to scale factor (1.1-2.0)
+        self.ui.scale_factor_label.setText(f"Scale Factor: {scale_factor:.1f}")
+
+    def update_min_neighbors_label(self, value):
+        """Update the min neighbors label with the current slider value"""
+        self.ui.min_neighbors_label.setText(f"Min Neighbors: {value}")
+
+    def update_min_size_label(self, value):
+        """Update the min size label with the current slider value"""
+        self.ui.min_size_label.setText(f"Min Size: {value}")
+
+    def detect_faces(self):
+        """Detect faces in the current image using the selected detector and parameters"""
+        if not hasattr(self, 'original_image'):
+            self.show_error("Please upload an image first")
+            return
+
+        try:
+            # Get parameters from UI
+            # detector_type = self.ui.detector_type_combo.currentText()
+            scale_factor = self.ui.scale_factor_slider.value() / 10.0  # Convert to float
+            min_neighbors = self.ui.min_neighbors_slider.value()
+            min_size = (self.ui.min_size_slider.value(), self.ui.min_size_slider.value())
+
+            # Detect faces using the face service
+            self.processed_image, faces = self.face_service.detect_faces(
+                self.original_image,
+                scale_factor=scale_factor,
+                min_neighbors=min_neighbors,
+                min_size=min_size
+            )
+
+            # Update the processed image
+            self.srv.clear_image(self.ui.processed_groupBox)
+            self.srv.set_image_in_groupbox(self.ui.processed_groupBox, self.processed_image)
+
+            # Show detection results
+            if faces:
+                self.show_info(f"Found {len(faces)} faces")
+            else:
+                self.show_info("No faces detected")
+
+        except Exception as e:
+            self.show_error(f"An error occurred during face detection: {str(e)}")
 
     def upload_image(self):
         self.path = self.srv.upload_image_file()
@@ -102,14 +175,6 @@ class MainWindowController:
         remove_directories()
         self.app.quit()
 
-    def detect_faces(self):
-        """Handle face detection"""
-        if not hasattr(self, 'current_image'):
-            self.show_error("Please upload an image first")
-            return
-        # TODO: Implement face detection
-        pass
-
     def train_pca_model(self):
         """Handle PCA model training"""
         if self.ui.dataset_combo.currentText() == "Custom Dataset":
@@ -132,14 +197,17 @@ class MainWindowController:
 
     def on_dataset_changed(self, index):
         """Handle dataset selection change"""
-        # TODO: Implement dataset loading
+        # TODO: Implement dataset change handling
         pass
 
     def on_color_mode_changed(self, index):
         """Handle color mode change"""
-        # TODO: Implement color mode switching
+        # TODO: Implement color mode change handling
         pass
 
-    def show_error(self, message):
-        """Show error message to user"""
-        QtWidgets.QMessageBox.critical(self, "Error", message)
+    def run(self):
+        """Start the application and show the main window"""
+        self.MainWindow.showFullScreen()
+        return self.app.exec_()
+
+

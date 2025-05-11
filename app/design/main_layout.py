@@ -264,14 +264,14 @@ class Ui_MainWindow(object):
                 border: 2px solid #3498db;
             }
         """)
-        
+
         self.sidebar_layout = QtWidgets.QVBoxLayout(self.sidebar)
         self.sidebar_layout.setContentsMargins(20, 20, 20, 20)
         self.sidebar_layout.setSpacing(20)
 
         # Add face detection and recognition controls
         self.setupFaceDetectionControls()
-        
+
         # Right side with image displays
         self.right_side = QtWidgets.QWidget()
         self.right_side_layout = QtWidgets.QHBoxLayout(self.right_side)
@@ -280,7 +280,7 @@ class Ui_MainWindow(object):
 
         # Setup image display group boxes
         self.setupImageGroupBoxes()
-        
+
         # Add widgets to layouts
         self.main_content_layout.addWidget(self.sidebar)
         self.main_content_layout.addWidget(self.right_side)
@@ -291,7 +291,7 @@ class Ui_MainWindow(object):
         dataset_group = QtWidgets.QGroupBox("Dataset Selection")
         dataset_group.setStyleSheet(self.groupbox_style)
         dataset_layout = QtWidgets.QVBoxLayout()
-        
+
         self.dataset_combo = QtWidgets.QComboBox()
         self.dataset_combo.addItems([
             "AT&T Face Database",
@@ -337,36 +337,100 @@ class Ui_MainWindow(object):
         detection_group = QtWidgets.QGroupBox("Face Detection")
         detection_group.setStyleSheet(self.groupbox_style)
         detection_layout = QtWidgets.QVBoxLayout()
-        
+
+        # Add detector type selection
+        # self.detector_type_combo = QtWidgets.QComboBox()
+        # self.detector_type_combo.setStyleSheet(self.dataset_combo.styleSheet())
+        detection_layout.addWidget(QtWidgets.QLabel("Detector Type:"))
+        # detection_layout.addWidget(self.detector_type_combo)
+
+        # Add scale factor slider
+        self.scale_factor_label = QtWidgets.QLabel("Scale Factor: 1.1")
+        self.scale_factor_label.setStyleSheet(self.label_style)
+        self.scale_factor_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.scale_factor_slider.setMinimum(11)  # 1.1
+        self.scale_factor_slider.setMaximum(20)  # 2.0
+        self.scale_factor_slider.setValue(11)  # 1.1
+        self.scale_factor_slider.setStyleSheet("""
+            QSlider::groove:horizontal {
+                border: 1px solid #0f3460;
+                height: 6px;
+                background: #16213e;
+                margin: 2px 0;
+                border-radius: 3px;
+            }
+            QSlider::handle:horizontal {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 #e94560, stop:1 #0f3460);
+                width: 20px;
+                margin: -8px 0;
+                border-radius: 6px;
+                border: 2px solid #16213e;
+            }
+            QSlider::sub-page:horizontal {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #e94560, stop:1 #0f3460);
+                border: 1px solid #0f3460;
+                height: 6px;
+                border-radius: 3px;
+            }
+        """)
+        detection_layout.addWidget(self.scale_factor_label)
+        detection_layout.addWidget(self.scale_factor_slider)
+
+        # Add min neighbors slider
+        self.min_neighbors_label = QtWidgets.QLabel("Min Neighbors: 5")
+        self.min_neighbors_label.setStyleSheet(self.label_style)
+        self.min_neighbors_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.min_neighbors_slider.setMinimum(1)
+        self.min_neighbors_slider.setMaximum(10)
+        self.min_neighbors_slider.setValue(5)
+        self.min_neighbors_slider.setStyleSheet(self.scale_factor_slider.styleSheet())
+        detection_layout.addWidget(self.min_neighbors_label)
+        detection_layout.addWidget(self.min_neighbors_slider)
+
+        # Add min size slider
+        self.min_size_label = QtWidgets.QLabel("Min Size: 30")
+        self.min_size_label.setStyleSheet(self.label_style)
+        self.min_size_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.min_size_slider.setMinimum(10)
+        self.min_size_slider.setMaximum(100)
+        self.min_size_slider.setValue(30)
+        self.min_size_slider.setStyleSheet(self.scale_factor_slider.styleSheet())
+        detection_layout.addWidget(self.min_size_label)
+        detection_layout.addWidget(self.min_size_slider)
+
+        # Add detect faces button
         self.detect_faces_btn = QtWidgets.QPushButton("Detect Faces")
         self.detect_faces_btn.setStyleSheet(self.button_style)
         detection_layout.addWidget(self.detect_faces_btn)
-        
+
+        # Add color mode combo
         self.color_mode_combo = QtWidgets.QComboBox()
         self.color_mode_combo.addItems(["Color", "Grayscale"])
         self.color_mode_combo.setStyleSheet(self.dataset_combo.styleSheet())
         detection_layout.addWidget(self.color_mode_combo)
+
         detection_group.setLayout(detection_layout)
 
         # Face Recognition Group
         recognition_group = QtWidgets.QGroupBox("Face Recognition")
         recognition_group.setStyleSheet(self.groupbox_style)
         recognition_layout = QtWidgets.QVBoxLayout()
-        
 
         self.recognize_faces_btn = QtWidgets.QPushButton("Recognize Faces")
         self.recognize_faces_btn.setStyleSheet(self.button_style)
         recognition_layout.addWidget(self.recognize_faces_btn)
-        
+
         self.eigen_components_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         self.eigen_components_slider.setMinimum(1)
         self.eigen_components_slider.setMaximum(100)
         self.eigen_components_slider.setValue(50)
-        self.eigen_components_slider.setStyleSheet(self.slider_style)
-        
+        self.eigen_components_slider.setStyleSheet(self.scale_factor_slider.styleSheet())
+
         self.eigen_components_label = QtWidgets.QLabel("Eigen Components: 50")
         self.eigen_components_label.setStyleSheet(self.label_style)
-        
+
         recognition_layout.addWidget(self.eigen_components_label)
         recognition_layout.addWidget(self.eigen_components_slider)
         recognition_group.setLayout(recognition_layout)
@@ -385,7 +449,7 @@ class Ui_MainWindow(object):
         self.original_layout = QtWidgets.QVBoxLayout(self.original_groupBox)
         self.original_layout.setContentsMargins(15, 25, 15, 15)
         self.original_layout.setSpacing(10)
-        
+
         self.original_image_label = QtWidgets.QLabel()
         self.original_image_label.setAlignment(QtCore.Qt.AlignCenter)
         self.original_image_label.setStyleSheet("""
@@ -403,7 +467,7 @@ class Ui_MainWindow(object):
         self.processed_layout = QtWidgets.QVBoxLayout(self.processed_groupBox)
         self.processed_layout.setContentsMargins(15, 25, 15, 15)
         self.processed_layout.setSpacing(10)
-        
+
         self.processed_image_label = QtWidgets.QLabel()
         self.processed_image_label.setAlignment(QtCore.Qt.AlignCenter)
         self.processed_image_label.setStyleSheet("""
