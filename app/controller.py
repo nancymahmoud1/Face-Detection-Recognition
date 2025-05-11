@@ -174,6 +174,8 @@ class MainWindowController:
 
         self.srv.clear_image(self.ui.processed_groupBox)
         self.srv.clear_image(self.ui.original_groupBox)
+        self.original_image = None
+        self.processed_image = None
 
     def quit_application(self):
         """Close the application."""
