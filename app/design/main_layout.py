@@ -288,16 +288,14 @@ class Ui_MainWindow(object):
     def setupFaceDetectionControls(self):
         """Creates controls for face detection and recognition."""
         # Dataset Selection Group
-        dataset_group = QtWidgets.QGroupBox("Dataset Selection")
+        dataset_group = QtWidgets.QGroupBox("Dataset Type")
         dataset_group.setStyleSheet(self.groupbox_style)
         dataset_layout = QtWidgets.QVBoxLayout()
 
         self.dataset_combo = QtWidgets.QComboBox()
         self.dataset_combo.addItems([
-            "AT&T Face Database",
-            "Yale Face Database",
-            "FERET Database",
-            "Custom Dataset"
+            "RGB",
+            "Grayscale"
         ])
         self.dataset_combo.setStyleSheet("""
             QComboBox {

@@ -1,6 +1,0 @@
-pca_embeddings_ATnT.npy
-pca_labels_ATnT.json
-pca_model_ATnT.pkl
-pca_embeddings_GT.npy
-pca_labels_GT.json
-pca_model_GT.pkl

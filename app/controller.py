@@ -4,13 +4,19 @@ from PyQt5 import QtWidgets, QtCore
 # Core utility and services
 from app.utils.clean_cache import remove_directories
 from app.services.image_service import ImageServices
-from app.services.face_service import FaceDetectionService
+from app.services.face_detection_service import FaceDetectionService
 
 # Main GUI design
 from app.design.main_layout import Ui_MainWindow
 
 # Image processing functionality
 import cv2
+import glob
+import os
+import random
+from app.services.face_recognition_service import FaceRecognitionService
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QLabel
 
 
 class MainWindowController:
@@ -69,7 +75,7 @@ class MainWindowController:
         self.ui.quit_app_button.clicked.connect(self.quit_application)
 
         # Face detection and recognition connections
-        self.ui.recognize_faces_btn.clicked.connect(self.recognize_faces)
+        self.ui.recognize_faces_btn.clicked.connect(self.recognize_and_retrieve)
         self.ui.eigen_components_slider.valueChanged.connect(self.update_eigen_components)
         self.ui.dataset_combo.currentIndexChanged.connect(self.on_dataset_changed)
         self.ui.color_mode_combo.currentIndexChanged.connect(self.on_color_mode_changed)
@@ -175,21 +181,43 @@ class MainWindowController:
         remove_directories()
         self.app.quit()
 
-    def train_pca_model(self):
-        """Handle PCA model training"""
-        if self.ui.dataset_combo.currentText() == "Custom Dataset":
-            self.show_error("Please select a standard dataset for training")
+    def recognize_and_retrieve(self):
+        if not self.path:
+            self.show_error("Please upload an image first.")
             return
-        # TODO: Implement PCA model training
-        pass
 
-    def recognize_faces(self):
-        """Handle face recognition"""
-        if not hasattr(self, 'current_image'):
-            self.show_error("Please upload an image first")
+        # Recognize identity
+        result = FaceRecognitionService.recognize_face(self.path)
+        if "error" in result:
+            self.show_error(result["error"])
             return
-        # TODO: Implement face recognition
-        pass
+
+        # Determine color mode from path (RGB or grayscale)
+        if "/RGB/" in self.path or os.path.normpath(self.path).split(os.sep)[-3].lower() == "rgb":
+            color_mode = "RGB"
+        else:
+            color_mode = "grayscale"
+
+        # Get predicted label (e.g., person_05)
+        person_folder = result["name"]
+        train_dir = f"datasets/Processed/train/{color_mode}/{person_folder}"
+
+        # Pick a matching training image
+        matching_images = glob.glob(os.path.join(train_dir, "*.jpg"))
+        sample_train_image = random.choice(matching_images) if matching_images else None
+
+        if not sample_train_image:
+            self.show_error(f"No training image found for {person_folder} in {color_mode} mode.")
+            return
+
+        # Show result info
+        self.show_info(f"Identified as: {person_folder}\nDistance: {result['distance']:.2f}\nMode: {color_mode}")
+
+        # Display matched image
+        matched_img = cv2.imread(sample_train_image)
+        if matched_img is not None:
+            self.srv.clear_image(self.ui.processed_groupBox)
+            self.srv.set_image_in_groupbox(self.ui.processed_groupBox, matched_img)
 
     def update_eigen_components(self, value):
         """Update the eigen components label"""
@@ -209,5 +237,3 @@ class MainWindowController:
         """Start the application and show the main window"""
         self.MainWindow.showFullScreen()
         return self.app.exec_()
-
-
