@@ -1,4 +1,4 @@
-from app.face.face_recognition import predict
+from app.models.pca_predictor import predict
 
 
 class FaceRecognitionService:

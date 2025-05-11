@@ -420,21 +420,10 @@ class Ui_MainWindow(object):
         self.recognize_faces_btn.setStyleSheet(self.button_style)
         recognition_layout.addWidget(self.recognize_faces_btn)
 
-        self.eigen_components_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.eigen_components_slider.setMinimum(1)
-        self.eigen_components_slider.setMaximum(100)
-        self.eigen_components_slider.setValue(50)
-        self.eigen_components_slider.setStyleSheet(self.scale_factor_slider.styleSheet())
-
-        self.eigen_components_label = QtWidgets.QLabel("Eigen Components: 50")
-        self.eigen_components_label.setStyleSheet(self.label_style)
-
-        recognition_layout.addWidget(self.eigen_components_label)
-        recognition_layout.addWidget(self.eigen_components_slider)
         recognition_group.setLayout(recognition_layout)
 
         # Add all groups to sidebar
-        self.sidebar_layout.addWidget(dataset_group)
+        # self.sidebar_layout.addWidget(dataset_group)
         self.sidebar_layout.addWidget(detection_group)
         self.sidebar_layout.addWidget(recognition_group)
         self.sidebar_layout.addStretch()

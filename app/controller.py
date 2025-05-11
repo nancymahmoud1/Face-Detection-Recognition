@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets, QtCore
 # Core utility and services
 from app.utils.clean_cache import remove_directories
 from app.services.image_service import ImageServices
-from app.services.face_detection_service import FaceDetectionService
+from app.services.face_detection_handler import FaceDetectionService
 
 # Main GUI design
 from app.design.main_layout import Ui_MainWindow
@@ -76,8 +76,7 @@ class MainWindowController:
 
         # Face detection and recognition connections
         self.ui.recognize_faces_btn.clicked.connect(self.recognize_and_retrieve)
-        self.ui.eigen_components_slider.valueChanged.connect(self.update_eigen_components)
-        self.ui.dataset_combo.currentIndexChanged.connect(self.on_dataset_changed)
+        # self.ui.dataset_combo.currentIndexChanged.connect(self.on_dataset_changed)
         self.ui.color_mode_combo.currentIndexChanged.connect(self.on_color_mode_changed)
 
         # Setup face detection controls
@@ -218,10 +217,6 @@ class MainWindowController:
         if matched_img is not None:
             self.srv.clear_image(self.ui.processed_groupBox)
             self.srv.set_image_in_groupbox(self.ui.processed_groupBox, matched_img)
-
-    def update_eigen_components(self, value):
-        """Update the eigen components label"""
-        self.ui.eigen_components_label.setText(f"Eigen Components: {value}")
 
     def on_dataset_changed(self, index):
         """Handle dataset selection change"""

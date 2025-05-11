@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from typing import List, Tuple, Optional, Dict
 import os
-from app.face.face_detection import FaceDetector
+from app.models.face_detector import FaceDetector
 
 
 class FaceDetectionService:

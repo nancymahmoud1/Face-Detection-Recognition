@@ -1,24 +1,29 @@
 FaceVector/
 ├── app/
-│   ├── controller.py
+│   ├── controller.py                         # Main controller (connects GUI & services)
 │   ├── design/
-│   │   ├── main_layout.py
+│   │   ├── main_layout.py                    # PyQt GUI logic
 │   │   ├── tools/
-│   │   │   └── gui_utilities.py
+│   │   │   └── gui_utilities.py              # Helper functions for GUI behavior
 │   │   └── ui/
-│   │       └── main_layout.ui
+│   │       └── main_layout.ui                # Qt Designer layout file
 │   ├── preprocessing/
-│   │   └── data_preprocessor.py
+│   │   └── data_preprocessor.py              # Dataset preprocessing and cleaning
 │   ├── services/
-│   │   └── image_service.py
+│   │   ├── image_service.py                  # Load/save/display image
+│   │   ├── face_recognition_service.py       # Calls prediction logic and formats results
+│   │   └── face_detection_service.py         # Wraps Haar cascade-based face detection
+│   ├── models/
+│   │   ├── pca_trainer.py                    # Handles training PCA models
+│   │   └── pca_predictor.py                  # Performs PCA-based predictions
 │   └── utils/
-│       ├── clean_cache.py
-│       └── logging_manager.py
+│       ├── clean_cache.py                    # Removes temp folders and files
+│       └── logging_manager.py                # Logs errors or events (optional)
 │
 ├── datasets/
 │   ├── Original/
-│   │   ├── ATnT/
-│   │   └── GeorgiaTech/
+│   │   ├── ATnT/                             # Raw dataset
+│   │   └── GeorgiaTech/                      # Raw dataset
 │   └── Processed/
 │       ├── train/
 │       │   ├── grayscale/
@@ -28,22 +33,20 @@ FaceVector/
 │           └── RGB/
 │
 ├── models/
+│   ├── pca_model_ATnT.pkl
 │   ├── pca_embeddings_ATnT.npy
 │   ├── pca_labels_ATnT.json
-│   ├── pca_model_ATnT.pkl
+│   ├── pca_model_GT.pkl
 │   ├── pca_embeddings_GT.npy
-│   ├── pca_labels_GT.json
-│   └── pca_model_GT.pkl
+│   └── pca_labels_GT.json
 │
 ├── static/
 │   ├── docs/
 │   │   └── OOP Structure.txt
 │   ├── icons/
 │   │   └── icon.png
-│   └── images/
+│   └── images/                               # Exported results or visual assets
 │
 ├── .gitignore
-│
-├── main.py
-│
-└── README.md
+├── main.py                                   # Entry point to launch the GUI
+└── README.md                                 # Documentation and usage
