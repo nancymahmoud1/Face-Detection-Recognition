@@ -8,11 +8,12 @@ from app.face.face_detection import FaceDetector
 class FaceDetectionService:
     def __init__(self):
         """Initialize the face detection service with available cascade classifiers"""
+        cascade_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'haarCascades')
         self.cascade_files = {
-            'face': cv2.data.haarcascades + 'haarcascade_frontalface_default.xml',
-            'profile': cv2.data.haarcascades + 'haarcascade_profileface.xml',
-            'eyes': cv2.data.haarcascades + 'haarcascade_eye.xml',
-            'smile': cv2.data.haarcascades + 'haarcascade_smile.xml'
+            'face': os.path.join(cascade_dir, 'haarcascade_frontalface_default.xml'),
+            'profile': os.path.join(cascade_dir, 'haarcascade_profileface.xml'),
+            'eyes': os.path.join(cascade_dir, 'haarcascade_eye.xml'),
+            'smile': os.path.join(cascade_dir, 'haarcascade_smile.xml')
         }
         self.detectors = {}
         self._initialize_detectors()
