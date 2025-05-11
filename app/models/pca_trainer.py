@@ -1,99 +1,87 @@
-import os
+import json
 import numpy as np
 import cv2
-import joblib
-import json
-from sklearn.decomposition import PCA
+from pathlib import Path
 
-# Configuration
-GRAYSCALE_DIR = "../../datasets/Processed/train/grayscale"
-RGB_DIR = "../../datasets/Processed/train/RGB"
-MODEL_DIR = "../../models"
-IMG_SIZE = (100, 100)
-N_COMPONENTS = 50
+# CONFIG
+GRAYSCALE_DIR = Path("../../datasets/Processed/train/grayscale")
+RGB_DIR = Path("../../datasets/Processed/train/RGB")
+MODEL_DIR = Path("../../models")
+IMG_SIZE = (100, 100)  # must match predictor
+VAR_THRESH = 0.95  # keep ≥95 % variance
+MAX_COMPONENTS = 150  # upper-cap so model stays light
+
+# ───────────────────────────────── preprocessing ────────────────────────────────
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
 
 
-def preprocess_image(image_path):
-    """
-    Reads an image, converts it to grayscale, resizes and equalizes it.
-    Returns the flattened vector.
-    """
-    img = cv2.imread(image_path)
+def preprocess(img_path: Path) -> np.ndarray:
+    """read → to-grey → resize → CLAHE → flatten → float32"""
+    img = cv2.imread(str(img_path))
     if img is None:
-        raise FileNotFoundError(f"Image not found: {image_path}")
-    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img_resized = cv2.resize(img_gray, IMG_SIZE)
-    img_equalized = cv2.equalizeHist(img_resized)
-    return img_equalized.flatten()
+        raise FileNotFoundError(img_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.resize(gray, IMG_SIZE, interpolation=cv2.INTER_AREA)
+    eq = clahe.apply(gray)
+    return eq.astype(np.float32).flatten()
 
 
-def load_training_data():
-    """
-    Loads training data from both grayscale and RGB folders.
-    Converts RGB images to grayscale before processing.
-    Returns:
-        X (np.array): image vectors
-        y (np.array): corresponding labels
-        label_map (dict): mapping from label to person folder
-    """
-    X = []
-    y = []
-    label_map = {}
-    current_label = 0
+# ───────────────────────────────── data loading ────────────────────────────────
+def load_data():
+    X, y, label_map = [], [], {}
+    label = 0
 
-    for person_folder in sorted(os.listdir(GRAYSCALE_DIR)):
-        gray_path = os.path.join(GRAYSCALE_DIR, person_folder)
-        rgb_path = os.path.join(RGB_DIR, person_folder)
+    for person in sorted(p.name for p in GRAYSCALE_DIR.iterdir() if p.is_dir()):
+        label_map[str(label)] = person
+        # grayscale imgs
+        for p in sorted((GRAYSCALE_DIR / person).glob("*.jpg")):
+            X.append(preprocess(p));
+            y.append(label)
+        # RGB imgs (converted to grey)
+        for p in sorted((RGB_DIR / person).glob("*.jpg")):
+            X.append(preprocess(p));
+            y.append(label)
+        print(f"📁  loaded {y.count(label):2d} imgs  → {person}")
+        label += 1
 
-        if not os.path.isdir(gray_path):
-            continue
-
-        label_map[str(current_label)] = person_folder
-        count = 0
-
-        # Load grayscale images
-        gray_images = sorted(f for f in os.listdir(gray_path) if f.endswith(".jpg"))
-        for image_name in gray_images:
-            image_path = os.path.join(gray_path, image_name)
-            X.append(preprocess_image(image_path))
-            y.append(current_label)
-            count += 1
-
-        # Load RGB images (converted to grayscale)
-        if os.path.isdir(rgb_path):
-            rgb_images = sorted(f for f in os.listdir(rgb_path) if f.endswith(".jpg"))
-            for image_name in rgb_images:
-                image_path = os.path.join(rgb_path, image_name)
-                X.append(preprocess_image(image_path))
-                y.append(current_label)
-                count += 1
-
-        print(f"📁 Loaded {count} images for {person_folder}")
-        current_label += 1
-
-    return np.array(X), np.array(y), label_map
+    return np.vstack(X), np.array(y, dtype=np.int32), label_map
 
 
+# ───────────────────────────────── PCA via SVD ─────────────────────────────────
 def train_and_save():
-    """
-    Loads data, trains PCA model, and saves everything.
-    """
-    print("📦 Loading training data...")
-    X_train, y_train, label_map = load_training_data()
+    X, y, label_map = load_data()
 
-    print("📊 Fitting PCA model...")
-    pca = PCA(n_components=N_COMPONENTS)
-    X_train_proj = pca.fit_transform(X_train)
+    # z-score normalise pixels (per-feature)
+    mean_vec = X.mean(0)
+    std_vec = X.std(0) + 1e-9  # avoid /0
+    Xz = (X - mean_vec) / std_vec
 
-    print("💾 Saving model and data...")
-    os.makedirs(MODEL_DIR, exist_ok=True)
-    joblib.dump(pca, os.path.join(MODEL_DIR, "pca_model.pkl"))
-    np.save(os.path.join(MODEL_DIR, "X_train_proj.npy"), X_train_proj)
-    np.save(os.path.join(MODEL_DIR, "y_train.npy"), y_train)
-    with open(os.path.join(MODEL_DIR, "label_map.json"), "w") as f:
-        json.dump(label_map, f, indent=2)
+    # economical SVD
+    print("   running SVD …")
+    U, S, Vt = np.linalg.svd(Xz, full_matrices=False)
 
-    print("✅ Training complete. Model saved to /models.")
+    # decide k to keep ≥ VAR_THRESH variance
+    var_ratio = (S ** 2) / np.sum(S ** 2)
+    cum_var = np.cumsum(var_ratio)
+    k = int(np.searchsorted(cum_var, VAR_THRESH) + 1)
+    k = min(k, MAX_COMPONENTS)
+    print(f"   → keeping {k} PCs (cum. var = {cum_var[k - 1]:.3f})")
+
+    PCs = Vt[:k].T  # (features × k)
+    X_proj = Xz @ PCs  # (n_samples × k)
+    # L2-normalise projections (for cosine similarity later)
+    X_proj = X_proj / np.linalg.norm(X_proj, axis=1, keepdims=True)
+
+    # ─── save ───
+    MODEL_DIR.mkdir(exist_ok=True)
+    np.save(MODEL_DIR / "pca_mean.npy", mean_vec)
+    np.save(MODEL_DIR / "pca_std.npy", std_vec)
+    np.save(MODEL_DIR / "pca_components.npy", PCs.astype(np.float32))
+    np.save(MODEL_DIR / "pca_embeddings.npy", X_proj.astype(np.float32))
+    np.save(MODEL_DIR / "pca_labels.npy", y)
+    (MODEL_DIR / "label_map.json").write_text(json.dumps(label_map, indent=2))
+
+    print("✅  PCA model + embeddings saved to /models")
 
 
 if __name__ == "__main__":
