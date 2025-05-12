@@ -1,16 +1,23 @@
-import numpy as np, cv2, json
+import numpy as np
+import cv2
+import json
 from pathlib import Path
 
+# ─────────── config ───────────
 IMG_SIZE = (100, 100)
 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
 
+# ─────────── paths ───────────
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+MODEL_DIR = PROJECT_ROOT / "models"
+
 # ─────────── load model ───────────
-mean_vec = np.load("models/pca_mean.npy")
-std_vec = np.load("models/pca_std.npy")
-PCs = np.load("models/pca_components.npy")
-X_train = np.load("models/pca_embeddings.npy")  # already L2-normed
-y_train = np.load("models/pca_labels.npy")
-label_map = json.loads(("models/label_map.json").read_text())
+mean_vec = np.load(MODEL_DIR / "pca_mean.npy")
+std_vec = np.load(MODEL_DIR / "pca_std.npy")
+PCs = np.load(MODEL_DIR / "pca_components.npy")
+X_train = np.load(MODEL_DIR / "pca_embeddings.npy")  # already L2-normalized
+y_train = np.load(MODEL_DIR / "pca_labels.npy")
+label_map = json.loads((MODEL_DIR / "label_map.json").read_text())
 
 
 # ─────────── helper ───────────────
