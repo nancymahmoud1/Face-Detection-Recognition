@@ -122,7 +122,8 @@ class MainWindowController:
 
             # Show detection results
             if faces:
-                self.show_info(f"Found {len(faces)} faces")
+                #self.show_info(f"Found {len(faces)} faces")
+                self.update_info_text(f"Found {len(faces)} faces")
             else:
                 self.show_info("No faces detected")
 
@@ -174,6 +175,7 @@ class MainWindowController:
 
         self.srv.clear_image(self.ui.processed_groupBox)
         self.srv.clear_image(self.ui.original_groupBox)
+        self.ui.info_textbox.clear()
         self.original_image = None
         self.processed_image = None
 
@@ -212,13 +214,28 @@ class MainWindowController:
             return
 
         # Show result info
-        self.show_info(f"Identified as: {person_folder}\nDistance: {result['distance']:.2f}\nMode: {color_mode}")
-
+        #self.show_info(f"Identified as: {person_folder}\nDistance: {result['distance']:.2f}\nMode: {color_mode}")
+        self.update_info_text(f"Identified as: {person_folder}\nDistance: {result['distance']:.2f}\nMode: {color_mode}")
         # Display matched image
         matched_img = cv2.imread(sample_train_image)
         if matched_img is not None:
             self.srv.clear_image(self.ui.processed_groupBox)
             self.srv.set_image_in_groupbox(self.ui.processed_groupBox, matched_img)
+
+    def update_info_text(self, message):
+        """Updates the info text box with the given message.
+
+        Args:
+            message (str): The message to display in the text box
+        """
+        # Append the message to the text box
+        self.ui.info_textbox.clear()
+        self.ui.info_textbox.append(message)
+
+        # Ensure the text box scrolls to show the latest message
+        self.ui.info_textbox.verticalScrollBar().setValue(
+            self.ui.info_textbox.verticalScrollBar().maximum()
+        )
 
     def on_dataset_changed(self, index):
         """Handle dataset selection change"""
