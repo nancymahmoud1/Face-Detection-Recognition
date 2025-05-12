@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 from typing import List, Tuple, Optional
-from .roc import PerformanceEvaluator, DetectionMetrics
 
 
 class FaceDetector:
@@ -70,43 +69,3 @@ class FaceDetector:
         for (x, y, w, h) in faces:
             cv2.rectangle(image_copy, (x, y), (x + w, y + h), color, thickness)
         return image_copy
-
-    def evaluate_performance(self,
-                           test_images: List[np.ndarray],
-                           ground_truth: List[List[Tuple[int, int, int, int]]],
-                           iou_threshold: float = 0.5) -> DetectionMetrics:
-        """
-        Evaluate face detector performance using precision, recall, and ROC curve
-
-        Args:
-            test_images: List of test images
-            ground_truth: List of ground truth face rectangles for each image
-            iou_threshold: IoU threshold for considering a detection as correct
-
-        Returns:
-            DetectionMetrics object containing performance metrics
-        """
-        all_predictions = []
-        all_ground_truth = []
-        
-        for img, gt_faces in zip(test_images, ground_truth):
-            # Get predictions
-            pred_faces = self.detect_faces(img)
-            all_predictions.extend(pred_faces)
-            all_ground_truth.extend(gt_faces)
-        
-        return PerformanceEvaluator.evaluate_performance(
-            all_predictions,
-            all_ground_truth,
-            iou_threshold
-        )
-
-    def plot_roc_curve(self, metrics: DetectionMetrics, save_path: Optional[str] = None):
-        """
-        Plot ROC curve using the evaluation metrics
-
-        Args:
-            metrics: DetectionMetrics object containing evaluation results
-            save_path: Optional path to save the plot
-        """
-        PerformanceEvaluator.plot_roc_curve(metrics, save_path)
