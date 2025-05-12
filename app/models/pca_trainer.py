@@ -2,6 +2,7 @@ import json
 import numpy as np
 import cv2
 from pathlib import Path
+from app.models.roc import evaluate_and_plot
 
 # CONFIG
 GRAYSCALE_DIR = Path("../../datasets/Processed/train/grayscale")
@@ -82,6 +83,10 @@ def train_and_save():
     (MODEL_DIR / "label_map.json").write_text(json.dumps(label_map, indent=2))
 
     print("✅  PCA model + embeddings saved to /models")
+
+    # ─── evaluate model performance on test set ───
+    print("🔍  Running evaluation on test set …")
+    evaluate_and_plot()
 
 
 if __name__ == "__main__":

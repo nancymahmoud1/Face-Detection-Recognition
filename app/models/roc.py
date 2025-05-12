@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, auc
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 # ─────────────── CONFIG ───────────────
 os.makedirs("../../static/model evaluation", exist_ok=True)
@@ -71,24 +72,51 @@ def evaluate_and_plot():
             y_pred.append(int(pred_label))
             y_scores.append(np.max(sims))
 
+    # Binary matching: 1 if correct, 0 if wrong
     y_binary = [int(t == p) for t, p in zip(y_true, y_pred)]
     acc = accuracy_score(y_true, y_pred)
     cm = confusion_matrix(y_true, y_pred)
     fpr, tpr, _ = roc_curve(y_binary, y_scores)
     roc_auc = auc(fpr, tpr)
 
+    # Compute precision, recall, f1
+    precision = precision_score(y_true, y_pred, average="macro")
+    recall = recall_score(y_true, y_pred, average="macro")
+    f1 = f1_score(y_true, y_pred, average="macro")
+    specificity = specificity_score(y_true, y_pred, np.unique(y_true))
+
+    # Plotting
     SAVE_DIR.mkdir(parents=True, exist_ok=True)
     label_list = [label_map[str(i)] for i in range(len(label_map))]
-
     plot_roc(fpr, tpr, roc_auc, ROC_PATH)
     save_confusion_matrix(cm, label_list, CM_PATH)
 
+    # Print
     print("✅ Evaluation Completed")
-    print(f"Accuracy: {acc:.4f}")
-    print(f"AUC Score: {roc_auc:.4f}")
+    print(f"Accuracy:     {acc:.4f}")
+    print(f"Precision:    {precision:.4f}")
+    print(f"Recall:       {recall:.4f}")
+    print(f"F1 Score:     {f1:.4f}")
+    print(f"Specificity:  {specificity:.4f}")
+    print(f"AUC Score:    {roc_auc:.4f}")
     print("Confusion Matrix:\n", cm)
     print(f"🖼️  ROC curve saved to: {ROC_PATH}")
     print(f"🖼️  Confusion matrix saved to: {CM_PATH}")
+
+    # Save metrics to JSON
+    metrics = {
+        "accuracy": round(acc, 4),
+        "precision": round(precision, 4),
+        "recall": round(recall, 4),
+        "f1_score": round(f1, 4),
+        "specificity": round(specificity, 4),
+        "auc_score": round(roc_auc, 4)
+    }
+
+    with open(SAVE_DIR / "evaluation_metrics.json", "w") as f:
+        json.dump(metrics, f, indent=2)
+
+    print(f"📁 Metrics saved to: {SAVE_DIR / 'evaluation_metrics.json'}")
 
 
 # ─────────────── ROC PLOT ───────────────
@@ -119,6 +147,13 @@ def save_confusion_matrix(cm, labels, save_path):
     plt.close()
 
 
-# ─────────────── MAIN ───────────────
-if __name__ == "__main__":
-    evaluate_and_plot()
+# Specificity: TN / (TN + FP)
+# For multiclass, calculate per class then average
+def specificity_score(y_true, y_pred, labels):
+    cm = confusion_matrix(y_true, y_pred, labels=labels)
+    FP = cm.sum(axis=0) - np.diag(cm)
+    FN = cm.sum(axis=1) - np.diag(cm)
+    TP = np.diag(cm)
+    TN = cm.sum() - (FP + FN + TP)
+    specificity = TN / (TN + FP + 1e-9)
+    return np.mean(specificity)
