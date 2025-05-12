@@ -1,0 +1,9 @@
+.idea/
+.DS_Store
+Logging/
+
+models/label_map.json
+models/*.pkl
+models/*.npy
+
+datasets/Original/GeorgiaTech/**/pspbrwse.jbf
