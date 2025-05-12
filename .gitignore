@@ -12,3 +12,6 @@ models/*.npy
 
 # Dataset-specific ignored files
 datasets/Original/GeorgiaTech/**/pspbrwse.jbf
+
+/static/model evaluation/confusion_matrix.png
+/static/model evaluation/roc_curve.png
