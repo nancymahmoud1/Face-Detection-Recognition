@@ -1,9 +1,14 @@
+# IDE and OS-specific files
 .idea/
 .DS_Store
+
+# Logging and temp files
 Logging/
 
+# Model files (outputs, configs, or checkpoints)
 models/label_map.json
 models/*.pkl
 models/*.npy
 
+# Dataset-specific ignored files
 datasets/Original/GeorgiaTech/**/pspbrwse.jbf
