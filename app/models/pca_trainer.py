@@ -94,6 +94,3 @@ def train_and_save():
     # print("🔍  Running evaluation on test set …")
 
     evaluate_and_plot()
-
-
-train_and_save()
