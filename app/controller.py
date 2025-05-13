@@ -122,10 +122,10 @@ class MainWindowController:
 
             # Show detection results
             if faces:
-                #self.show_info(f"Found {len(faces)} faces")
+                # self.show_info(f"Found {len(faces)} faces")
                 self.update_info_text(f"Found {len(faces)} faces")
             else:
-                self.show_info("No faces detected")
+                self.ui.update_info_text("No faces detected")
 
         except Exception as e:
             self.show_error(f"An error occurred during face detection: {str(e)}")
@@ -214,7 +214,7 @@ class MainWindowController:
             return
 
         # Show result info
-        #self.show_info(f"Identified as: {person_folder}\nDistance: {result['distance']:.2f}\nMode: {color_mode}")
+        # self.show_info(f"Identified as: {person_folder}\nDistance: {result['distance']:.2f}\nMode: {color_mode}")
         self.update_info_text(f"Identified as: {person_folder}\nDistance: {result['distance']:.2f}\nMode: {color_mode}")
         # Display matched image
         matched_img = cv2.imread(sample_train_image)

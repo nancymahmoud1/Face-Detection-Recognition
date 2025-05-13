@@ -417,7 +417,6 @@ class Ui_MainWindow(object):
         detection_layout = QtWidgets.QVBoxLayout()
         detection_layout.setSpacing(int(self.base_height * 0.01))
 
-
         # Add scale factor slider
         self.scale_factor_label = QtWidgets.QLabel("Scale Factor: 1.1")
         self.scale_factor_label.setStyleSheet(self.label_style)
@@ -534,8 +533,9 @@ class Ui_MainWindow(object):
     # Controller Function
     # ----------------------------------------------------------------------
     def update_info_text(self, message):
-        """Controller function to update the text box with a message."""
-        self.info_textbox.append(message)
+        """Controller function to clear and update the text box with a message."""
+        self.info_textbox.clear()  # Clear existing text
+        self.info_textbox.append(message)  # Append new message
 
     # ----------------------------------------------------------------------
     # Show/Hide Logic
