@@ -12,11 +12,9 @@ class FaceDetectionService:
         self.cascade_files = {
             'face': os.path.join(cascade_dir, 'haarcascade_frontalface_default.xml'),
             'profile': os.path.join(cascade_dir, 'haarcascade_profileface.xml'),
-            'eyes': os.path.join(cascade_dir, 'haarcascade_eye.xml'),
-            'smile': os.path.join(cascade_dir, 'haarcascade_smile.xml')
         }
         self.detectors = {}
-        self._initialize_detectors()
+        self._initialize_detectors()   # Initialize all detectors
 
     def _initialize_detectors(self):
         """Initialize all cascade classifiers"""
@@ -24,26 +22,21 @@ class FaceDetectionService:
         for name, path in self.cascade_files.items():
             try:
                 if not os.path.exists(path):
-                    # print(f"Warning: Cascade file not found at {path}")
                     failed_detectors.append(name)
                     continue
 
                 detector = FaceDetector(path)
                 if detector.face_cascade.empty():
-                    # print(f"Warning: Failed to load cascade classifier for {name}")
                     failed_detectors.append(name)
                     continue
 
-                self.detectors[name] = detector
-                # print(f"Successfully loaded {name} detector")
+                self.detectors[name] = detector  # Store successful detector
 
             except Exception as e:
-                # print(f"Error initializing {name} detector: {str(e)}")
                 failed_detectors.append(name)
 
         if failed_detectors:
             pass
-            # print(f"Failed to initialize detectors: {', '.join(failed_detectors)}")
 
         if not self.detectors:
             raise RuntimeError("No cascade classifiers could be loaded. Please check OpenCV installation.")
@@ -51,7 +44,7 @@ class FaceDetectionService:
     def detect_faces(self,
                      image: np.ndarray,
                      detector_type: str = 'face',
-                     scale_factor: float = 1.1,
+                     scale_factor: float = 1.1, # How much to reduce image size at each scale
                      min_neighbors: int = 5,
                      min_size: Tuple[int, int] = (30, 30)) -> Tuple[
         Optional[np.ndarray], List[Tuple[int, int, int, int]]]:
@@ -60,10 +53,9 @@ class FaceDetectionService:
 
         Args:
             image: Input image (BGR format)
-            detector_type: Type of detection ('face', 'profile', 'eyes', 'smile')
-            scale_factor: Parameter specifying how much the image size is reduced at each image scale
-            min_neighbors: Parameter specifying how many neighbors each candidate rectangle should have
-            min_size: Minimum possible object size
+            scale_factor: how much the image size is reduced at each image scale(1.1 = 10% reduction)
+            min_neighbors: how many neighbors each candidate rectangle should have
+            min_size: Minimum object size to detect
 
         Returns:
             Tuple of (processed image with rectangles, list of detected rectangles)
@@ -101,25 +93,7 @@ class FaceDetectionService:
             return result_image, rectangles
 
         except cv2.error as e:
-            # print(f"OpenCV error during {detector_type} detection: {str(e)}")
             raise RuntimeError(f"Image processing failed: {str(e)}")
         except Exception as e:
-            # print(f"Error during {detector_type} detection: {str(e)}")
             raise RuntimeError(f"Detection failed: {str(e)}")
 
-    def get_available_detectors(self) -> List[str]:
-        """Get list of available detector types"""
-        return list(self.detectors.keys())
-
-    def get_detector_info(self) -> Dict[str, str]:
-        """Get information about available detectors"""
-        return {
-            'face': 'Frontal face detection',
-            'profile': 'Profile face detection',
-            'eyes': 'Eye detection',
-            'smile': 'Smile detection'
-        }
-
-    def get_detector_status(self) -> Dict[str, bool]:
-        """Get status of each detector (whether it was successfully loaded)"""
-        return {name: name in self.detectors for name in self.cascade_files.keys()}
