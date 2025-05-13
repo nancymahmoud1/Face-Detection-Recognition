@@ -24,25 +24,26 @@ class FaceDetectionService:
         for name, path in self.cascade_files.items():
             try:
                 if not os.path.exists(path):
-                    print(f"Warning: Cascade file not found at {path}")
+                    # print(f"Warning: Cascade file not found at {path}")
                     failed_detectors.append(name)
                     continue
 
                 detector = FaceDetector(path)
                 if detector.face_cascade.empty():
-                    print(f"Warning: Failed to load cascade classifier for {name}")
+                    # print(f"Warning: Failed to load cascade classifier for {name}")
                     failed_detectors.append(name)
                     continue
 
                 self.detectors[name] = detector
-                print(f"Successfully loaded {name} detector")
+                # print(f"Successfully loaded {name} detector")
 
             except Exception as e:
-                print(f"Error initializing {name} detector: {str(e)}")
+                # print(f"Error initializing {name} detector: {str(e)}")
                 failed_detectors.append(name)
 
         if failed_detectors:
-            print(f"Failed to initialize detectors: {', '.join(failed_detectors)}")
+            pass
+            # print(f"Failed to initialize detectors: {', '.join(failed_detectors)}")
 
         if not self.detectors:
             raise RuntimeError("No cascade classifiers could be loaded. Please check OpenCV installation.")
@@ -100,10 +101,10 @@ class FaceDetectionService:
             return result_image, rectangles
 
         except cv2.error as e:
-            print(f"OpenCV error during {detector_type} detection: {str(e)}")
+            # print(f"OpenCV error during {detector_type} detection: {str(e)}")
             raise RuntimeError(f"Image processing failed: {str(e)}")
         except Exception as e:
-            print(f"Error during {detector_type} detection: {str(e)}")
+            # print(f"Error during {detector_type} detection: {str(e)}")
             raise RuntimeError(f"Detection failed: {str(e)}")
 
     def get_available_detectors(self) -> List[str]:

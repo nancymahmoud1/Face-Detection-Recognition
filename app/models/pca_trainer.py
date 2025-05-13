@@ -3,14 +3,20 @@ import numpy as np
 import cv2
 from pathlib import Path
 from app.models.roc import evaluate_and_plot
+from pathlib import Path
 
-# CONFIG
-GRAYSCALE_DIR = Path("../../datasets/Processed/train/grayscale")
-RGB_DIR = Path("../../datasets/Processed/train/RGB")
-MODEL_DIR = Path("../../models")
-IMG_SIZE = (100, 100)  # must match predictor
-VAR_THRESH = 0.95  # keep ≥95 % variance
-MAX_COMPONENTS = 150  # upper-cap so model stays light
+# Dynamically resolve base project directory from this script’s location
+PROJECT_ROOT = Path(__file__).resolve().parents[2]  # assuming you're in app/models
+
+# Consistent cross-platform paths
+GRAYSCALE_DIR = PROJECT_ROOT / "datasets/Processed/train/grayscale"
+RGB_DIR = PROJECT_ROOT / "datasets/Processed/train/RGB"
+MODEL_DIR = PROJECT_ROOT / "models"
+
+# Config constants
+IMG_SIZE = (100, 100)
+VAR_THRESH = 0.95
+MAX_COMPONENTS = 150
 
 # ───────────────────────────────── preprocessing ────────────────────────────────
 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
@@ -42,7 +48,7 @@ def load_data():
         for p in sorted((RGB_DIR / person).glob("*.jpg")):
             X.append(preprocess(p));
             y.append(label)
-        print(f"📁  loaded {y.count(label):2d} imgs  → {person}")
+        # print(f"📁  loaded {y.count(label):2d} imgs  → {person}")
         label += 1
 
     return np.vstack(X), np.array(y, dtype=np.int32), label_map
@@ -58,7 +64,7 @@ def train_and_save():
     Xz = (X - mean_vec) / std_vec
 
     # economical SVD
-    print("   running SVD …")
+    # print("   running SVD …")
     U, S, Vt = np.linalg.svd(Xz, full_matrices=False)
 
     # decide k to keep ≥ VAR_THRESH variance
@@ -66,7 +72,7 @@ def train_and_save():
     cum_var = np.cumsum(var_ratio)
     k = int(np.searchsorted(cum_var, VAR_THRESH) + 1)
     k = min(k, MAX_COMPONENTS)
-    print(f"   → keeping {k} PCs (cum. var = {cum_var[k - 1]:.3f})")
+    # print(f"   → keeping {k} PCs (cum. var = {cum_var[k - 1]:.3f})")
 
     PCs = Vt[:k].T  # (features × k)
     X_proj = Xz @ PCs  # (n_samples × k)
@@ -82,12 +88,12 @@ def train_and_save():
     np.save(MODEL_DIR / "pca_labels.npy", y)
     (MODEL_DIR / "label_map.json").write_text(json.dumps(label_map, indent=2))
 
-    print("✅  PCA model + embeddings saved to /models")
+    # print("✅  PCA model + embeddings saved to /models")
 
     # ─── evaluate model performance on test set ───
-    print("🔍  Running evaluation on test set …")
+    # print("🔍  Running evaluation on test set …")
+
     evaluate_and_plot()
 
 
-if __name__ == "__main__":
-    train_and_save()
+train_and_save()

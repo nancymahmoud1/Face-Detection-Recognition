@@ -138,4 +138,4 @@ if __name__ == "__main__":
         random_state=2025,
     )
     pre()
-    print("✓ Done.  New structure: Processed/{train,test}/{grayscale,RGB}/…")
+    # print("✓ Done.  New structure: Processed/{train,test}/{grayscale,RGB}/…")

@@ -164,7 +164,7 @@ class MainWindowController:
 
     def save_image(self):
         if self.processed_image is None:
-            print("Error: Processed image is None.")
+            # print("Error: Processed image is None.")
             return
 
         self.srv.save_image(self.processed_image)

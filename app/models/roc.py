@@ -7,12 +7,25 @@ import seaborn as sns
 from pathlib import Path
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, auc
 from sklearn.metrics import precision_score, recall_score, f1_score
+from pathlib import Path
+import os
 
 # ─────────────── CONFIG ───────────────
-os.makedirs("../../static/model evaluation", exist_ok=True)
-TEST_DIR = Path("../../datasets/Processed/test/grayscale")
-MODEL_DIR = Path("../../models")
-SAVE_DIR = Path("../../static/model evaluation")
+
+# Define the root of the project based on this file's location
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+# Define directories relative to project root
+DATASETS_DIR = PROJECT_ROOT / "datasets"
+TEST_DIR = DATASETS_DIR / "Processed" / "test" / "grayscale"
+MODEL_DIR = PROJECT_ROOT / "models"
+STATIC_DIR = PROJECT_ROOT / "static"
+SAVE_DIR = STATIC_DIR / "model evaluation"
+
+# Ensure save directory exists
+os.makedirs(SAVE_DIR, exist_ok=True)
+
+# Output paths
 ROC_PATH = SAVE_DIR / "roc_curve.png"
 CM_PATH = SAVE_DIR / "confusion_matrix.png"
 IMG_SIZE = (100, 100)
@@ -91,17 +104,17 @@ def evaluate_and_plot():
     plot_roc(fpr, tpr, roc_auc, ROC_PATH)
     save_confusion_matrix(cm, label_list, CM_PATH)
 
-    # Print
-    print("✅ Evaluation Completed")
-    print(f"Accuracy:     {acc:.4f}")
-    print(f"Precision:    {precision:.4f}")
-    print(f"Recall:       {recall:.4f}")
-    print(f"F1 Score:     {f1:.4f}")
-    print(f"Specificity:  {specificity:.4f}")
-    print(f"AUC Score:    {roc_auc:.4f}")
-    print("Confusion Matrix:\n", cm)
-    print(f"🖼️  ROC curve saved to: {ROC_PATH}")
-    print(f"🖼️  Confusion matrix saved to: {CM_PATH}")
+    # print
+    # print("✅ Evaluation Completed")
+    # print(f"Accuracy:     {acc:.4f}")
+    # print(f"Precision:    {precision:.4f}")
+    # print(f"Recall:       {recall:.4f}")
+    # print(f"F1 Score:     {f1:.4f}")
+    # print(f"Specificity:  {specificity:.4f}")
+    # print(f"AUC Score:    {roc_auc:.4f}")
+    # print("Confusion Matrix:\n", cm)
+    # print(f"🖼️  ROC curve saved to: {ROC_PATH}")
+    # print(f"🖼️  Confusion matrix saved to: {CM_PATH}")
 
     # Save metrics to JSON
     metrics = {
@@ -116,7 +129,7 @@ def evaluate_and_plot():
     with open(SAVE_DIR / "evaluation_metrics.json", "w") as f:
         json.dump(metrics, f, indent=2)
 
-    print(f"📁 Metrics saved to: {SAVE_DIR / 'evaluation_metrics.json'}")
+    # print(f"📁 Metrics saved to: {SAVE_DIR / 'evaluation_metrics.json'}")
 
 
 # ─────────────── ROC PLOT ───────────────
