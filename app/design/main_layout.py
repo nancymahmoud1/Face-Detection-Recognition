@@ -250,7 +250,7 @@ class Ui_MainWindow(object):
         self.title_icon.setObjectName("title_icon")
 
         self.title_label = self.util.createLabel(
-            text="Face Recognition",
+            text="Face Vectors",
             style=f"color:white; padding:{int(self.base_height * 0.01)}px; padding-left:0; font-size: {self.title_font_size}px; font-weight: bold",
             isHead=True
         )

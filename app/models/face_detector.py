@@ -29,7 +29,7 @@ class FaceDetector:
                    image: np.ndarray,
                    faces: List[Tuple[int, int, int, int]],
                    color: Tuple[int, int, int] = (0, 255, 0),
-                   thickness: int = 2) -> np.ndarray:
+                   thickness: int = 20) -> np.ndarray:
         image_copy = image.copy()
         for (x, y, w, h) in faces:
             cv2.rectangle(image_copy, (x, y), (x + w, y + h), color, thickness)
