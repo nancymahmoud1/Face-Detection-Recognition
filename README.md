@@ -2,9 +2,11 @@
 
 ### Overview
 
-**FaceVector** is a lightweight face recognition system powered by machine learning. It applies **Principal Component Analysis (PCA)** to extract facial embeddings and match identities using distance-based classification. The project supports standard RGB and grayscale datasets, with automated training on first run and performance evaluation via ROC curves.
+**FaceVector** is a modular computer vision system that performs both **face detection** and **face recognition**. Detection is handled in real time using OpenCV’s Haar cascades, providing a fast and reliable way to localize faces in images.
 
-> This machine learning project applies **unsupervised dimensionality reduction (PCA)** to extract face embeddings and classify identities. It features automated model training on first run, demonstrating a modular and reproducible ML pipeline for facial recognition.
+The recognition component is powered by **machine learning**, using **Principal Component Analysis (PCA)** to extract facial embeddings and classify identities. The system supports RGB and grayscale datasets, trains automatically on first run, and evaluates performance using standard classification metrics and ROC analysis.
+
+> This project demonstrates how classical detection methods and unsupervised learning can be combined into a reproducible pipeline for facial analysis—bridging traditional vision techniques with lightweight machine learning.
 
 ![GUI Screenshot](https://github.com/user-attachments/assets/617433f4-ee4e-4b1b-bafb-de1ccef0462a)
 
