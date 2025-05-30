@@ -129,7 +129,7 @@ These results confirm the model’s effectiveness in both correctly identifying 
 ### Installation
 
 ```
-git clone https://github.com/YassienTawfikk/FaceVector.git
+git clone https://github.com/nancymahmoud1/Face-Detection-Recognition.git
 cd FaceVector
 pip install -r requirements.txt
 python main.py
