@@ -24,11 +24,11 @@ The recognition component is powered by **machine learning**, using **Principal 
 
 ---
 
-### 🧠 Model Overview: PCA for Face Recognition
+### Model Overview: PCA for Face Recognition
 
 FaceVector uses **Principal Component Analysis (PCA)** to reduce high-dimensional image data into a compact set of features known as **eigenfaces**. This enables fast and interpretable face recognition with limited training data.
 
-#### 📌 How PCA Works in FaceVector:
+#### How PCA Works in FaceVector:
 
 1. **Flattening** – Each face image is converted into a 1D vector.
 2. **Covariance Matrix** – A matrix capturing variance between pixel intensities is computed.
@@ -67,14 +67,28 @@ Only **four images per person** are used for training, ensuring the model remain
 
 ---
 
-### Installation
+### Example: Face Recognition Output
 
-```bash
-git clone https://github.com/YassienTawfikk/FaceVector.git
-cd FaceVector
-pip install -r requirements.txt
-python main.py
-```
+This example demonstrates the process of recognizing a face using PCA projections from the RGB dataset.
+
+<table>
+<tr>
+<td><b>Test Image</b></td>
+<td><b>Matched Training Image</b></td>
+<td><b>Result Panel</b></td>
+</tr>
+<tr>
+<td><img src="https://github.com/user-attachments/assets/8c3bc736-c470-4ace-8274-cf1ba862e94c" width="250"/></td>
+<td><img src="https://github.com/user-attachments/assets/3a576a36-1412-4b3b-994d-84932a7d46f0" width="250"/></td>
+<td><img src="https://github.com/user-attachments/assets/747cc771-f760-4352-9e5e-2027daa2549d" width="250"/></td>
+</tr>
+</table>
+
+> **Identified as:** `person_04`
+> **Euclidean Distance:** `0.37`
+> **Recognition Mode:** `RGB`
+
+> **Insight:** The system correctly identified the test image by comparing its PCA embedding with the closest match in the training set using Euclidean distance. A distance below 0.5 generally indicates a high-confidence match under the current dataset and preprocessing configuration.
 
 ---
 
@@ -88,17 +102,17 @@ python main.py
 
 ---
 
-### 📊 Performance Evaluation
+### Performance Evaluation
 
 FaceVector evaluates its PCA-based recognition model using standard classification metrics and ROC curve visualization. The system achieves high accuracy and reliability even with a small training set per identity.
 
-#### 📈 ROC Curve
+#### ROC Curve
 
 ![ROC Curve](https://github.com/user-attachments/assets/76535f8d-79c4-43f7-a342-e28f459d9aa4)
 
 > The ROC curve above illustrates the model's ability to distinguish between different identities across thresholds.
 
-#### 🧪 Evaluation Metrics
+#### Evaluation Metrics
 
 | Metric      | Value  |
 | ----------- | ------ |
@@ -110,6 +124,17 @@ FaceVector evaluates its PCA-based recognition model using standard classificati
 | AUC Score   | 0.9231 |
 
 These results confirm the model’s effectiveness in both correctly identifying known faces and minimizing false positives, even with only four training images per person.
+---
+
+### Installation
+
+```
+git clone https://github.com/YassienTawfikk/FaceVector.git
+cd FaceVector
+pip install -r requirements.txt
+python main.py
+```
+
 
 ---
 
